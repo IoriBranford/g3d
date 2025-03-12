@@ -117,11 +117,11 @@ function camera.firstPersonMovement(dt)
     if love.keyboard.isDown "s" then moveX = moveX - 1 end
     if love.keyboard.isDown "d" then moveY = moveY - 1 end
     if love.keyboard.isDown "space" then
-        camera.position[3] = camera.position[3] + speed*dt
+        camera.position[3] = camera.position[3] + g3d.hand*speed*dt
         cameraMoved = true
     end
     if love.keyboard.isDown "lshift" then
-        camera.position[3] = camera.position[3] - speed*dt
+        camera.position[3] = camera.position[3] - g3d.hand*speed*dt
         cameraMoved = true
     end
 
@@ -148,7 +148,7 @@ function camera.firstPersonLook(dx,dy)
 
     local sensitivity = 1/300
     fpsController.direction = fpsController.direction - dx*sensitivity
-    fpsController.pitch = math.max(math.min(fpsController.pitch - dy*sensitivity, math.pi*0.5), math.pi*-0.5)
+    fpsController.pitch = math.max(math.min(fpsController.pitch - g3d.hand*dy*sensitivity, math.pi*0.5), math.pi*-0.5)
 
     camera.lookInDirection(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
 end

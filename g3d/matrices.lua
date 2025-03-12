@@ -6,6 +6,7 @@ local vectors = require(g3d.path .. ".vectors")
 local vectorCrossProduct = vectors.crossProduct
 local vectorDotProduct = vectors.dotProduct
 local vectorNormalize = vectors.normalize
+local g3d = g3d
 
 ----------------------------------------------------------------------------------------------------
 -- matrix class
@@ -91,11 +92,12 @@ function matrix:setProjectionMatrix(fov, near, far, aspectRatio)
     local bottom = -1*top
     local right = top * aspectRatio
     local left = -1*right
+    local hand = g3d.hand
 
     self[1],  self[2],  self[3],  self[4]  = 2*near/(right-left), 0, (right+left)/(right-left), 0
     self[5],  self[6],  self[7],  self[8]  = 0, 2*near/(top-bottom), (top+bottom)/(top-bottom), 0
-    self[9],  self[10], self[11], self[12] = 0, 0, -1*(far+near)/(far-near), -2*far*near/(far-near)
-    self[13], self[14], self[15], self[16] = 0, 0, -1, 0
+    self[9],  self[10], self[11], self[12] = 0, 0, -1*(far+near)/(far-near), hand*-2*far*near/(far-near)
+    self[13], self[14], self[15], self[16] = 0, 0, -hand, 0
 end
 
 -- returns an orthographic projection matrix
@@ -117,13 +119,15 @@ end
 -- returns a view matrix
 -- eye, target, and up are all 3d vectors
 function matrix:setViewMatrix(eye, target, up)
+    local hand = g3d.hand
     local z1, z2, z3 = vectorNormalize(eye[1] - target[1], eye[2] - target[2], eye[3] - target[3])
+    z1, z2, z3 = hand*z1, hand*z2, hand*z3
     local x1, x2, x3 = vectorNormalize(vectorCrossProduct(up[1], up[2], up[3], z1, z2, z3))
     local y1, y2, y3 = vectorCrossProduct(z1, z2, z3, x1, x2, x3)
 
-    self[1],  self[2],  self[3],  self[4]  = x1, x2, x3, -1*vectorDotProduct(x1, x2, x3, eye[1], eye[2], eye[3])
-    self[5],  self[6],  self[7],  self[8]  = y1, y2, y3, -1*vectorDotProduct(y1, y2, y3, eye[1], eye[2], eye[3])
-    self[9],  self[10], self[11], self[12] = z1, z2, z3, -1*vectorDotProduct(z1, z2, z3, eye[1], eye[2], eye[3])
+    self[1],  self[2],  self[3],  self[4]  = x1, x2, x3, -hand*vectorDotProduct(x1, x2, x3, eye[1], eye[2], eye[3])
+    self[5],  self[6],  self[7],  self[8]  = y1, y2, y3, -hand*vectorDotProduct(y1, y2, y3, eye[1], eye[2], eye[3])
+    self[9],  self[10], self[11], self[12] = z1, z2, z3, -hand*vectorDotProduct(z1, z2, z3, eye[1], eye[2], eye[3])
     self[13], self[14], self[15], self[16] = 0, 0, 0, 1
 end
 

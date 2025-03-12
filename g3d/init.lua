@@ -43,6 +43,7 @@ g3d = {
     ]],
     path = ...,
     shaderpath = (...):gsub("%.", "/") .. "/g3d.vert",
+    hand = 1 -- +1 = right, -1 = left
 }
 
 -- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor

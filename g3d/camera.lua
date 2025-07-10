@@ -75,7 +75,7 @@ function camera.lookInDirection(x,y,z, directionTowards,pitchTowards)
     fpsController.pitch = pitchTowards or fpsController.pitch
 
     -- turn the cos of the pitch into a sign value, either 1, -1, or 0
-    local sign = math.cos(fpsController.pitch)
+    local sign = math.cos(fpsController.pitch) * g3d.hand
     sign = (sign > 0 and 1) or (sign < 0 and -1) or 0
 
     -- don't let cosPitch ever hit 0, because weird camera glitches will happen
@@ -112,16 +112,17 @@ function camera.firstPersonMovement(dt)
     local moveX, moveY = 0, 0
     local cameraMoved = false
     local speed = 9
+    local hand = g3d.hand
     if love.keyboard.isDown "w" then moveX = moveX + 1 end
-    if love.keyboard.isDown "a" then moveY = moveY + 1 end
+    if love.keyboard.isDown "a" then moveY = moveY + hand end
     if love.keyboard.isDown "s" then moveX = moveX - 1 end
-    if love.keyboard.isDown "d" then moveY = moveY - 1 end
+    if love.keyboard.isDown "d" then moveY = moveY - hand end
     if love.keyboard.isDown "space" then
-        camera.position[3] = camera.position[3] + g3d.hand*speed*dt
+        camera.position[3] = camera.position[3] + hand*speed*dt
         cameraMoved = true
     end
     if love.keyboard.isDown "lshift" then
-        camera.position[3] = camera.position[3] - g3d.hand*speed*dt
+        camera.position[3] = camera.position[3] - hand*speed*dt
         cameraMoved = true
     end
 
@@ -147,8 +148,8 @@ function camera.firstPersonLook(dx,dy)
     love.mouse.setRelativeMode(true)
 
     local sensitivity = 1/300
-    fpsController.direction = fpsController.direction - dx*sensitivity
-    fpsController.pitch = math.max(math.min(fpsController.pitch - g3d.hand*dy*sensitivity, math.pi*0.5), math.pi*-0.5)
+    fpsController.direction = fpsController.direction - g3d.hand*dx*sensitivity
+    fpsController.pitch = math.max(math.min(fpsController.pitch - dy*sensitivity, math.pi*0.5), math.pi*-0.5)
 
     camera.lookInDirection(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
 end
